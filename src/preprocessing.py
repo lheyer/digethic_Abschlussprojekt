@@ -6,6 +6,31 @@ import pandas as pd
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
 
+#########################
+### Constants & Dicts ###
+#########################
+
+lake_id_dict= {'Lake Mendota': 'nhd_13293262',
+               'Sparkling Lake': 'nhd_13344210'}
+seconds_per_timestep = 86400
+
+lake_area_dict = {'Lake Mendota': 39416000,
+               'Sparkling Lake': 635356}
+lake_depth_areas_dict = dict()
+lake_depth_areas_dict['Lake Mendota'] = np.array([\
+        39865825,38308175,38308175,35178625,35178625,33403850,31530150,31530150,30154150,30154150,29022000,\
+        29022000,28063625,28063625,27501875,26744500,26744500,26084050,26084050,25310550,24685650,24685650,\
+        23789125,23789125,22829450,22829450,21563875,21563875,20081675,18989925,18989925,17240525,17240525,\
+        15659325,14100275,14100275,12271400,12271400,9962525,9962525,7777250,7777250,5956775,4039800,4039800,\
+        2560125,2560125,820925,820925,216125])
+
+
+
+
+#########################
+### Dataset classes ###
+#########################
+
 class Meteo_DS(Dataset):
   """Meteorological Dataset
     for serving the meteorological
