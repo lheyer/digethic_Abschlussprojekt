@@ -5,6 +5,7 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 from torch.utils.data import DataLoader, Dataset
+from sklearn.preprocessing import MinMaxScaler
 
 #########################
 ### Constants & Dicts ###
