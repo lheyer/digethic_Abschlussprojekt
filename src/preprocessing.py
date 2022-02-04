@@ -104,7 +104,7 @@ class Meteo_DS(Dataset):
     Y_labels.loc[:,'depth'] = Y_labels.index #.apply(lambda x: float(x.split('_')[-1]))
     Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
     Y_labels = Y_labels.sort_values('depth')
-    Y_labels = Y_labels.drop(columns=['depth']).iloc[:n_depths].to_numpy()
+    Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
     return Y_labels
 
   def get_ice_mask(self):
