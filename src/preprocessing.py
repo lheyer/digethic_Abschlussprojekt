@@ -114,9 +114,12 @@ class Meteo_DS(Dataset):
     
     if 'depth' in Y.columns:
       index_arr = ['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)]
-      print('index_arr',index_arr)
+      print('index_arr: ',index_arr)
+      print('index_arr shape: ',index_arr.shape)
       print('get labels from buoy data')
-      Y_labels = Y.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
+      Y_labels = Y
+      Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
+      Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
       #print(Y_labels.iloc[0])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       #print(Y_labels.columns)
