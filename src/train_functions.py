@@ -61,6 +61,12 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
       
       # [~torch.isnan(loss_Y)] for not including nan-values in labels used for calculating MSE-loss 
       # though not important for the other loss metrics
+      print('epoch: ',epoch)
+      print('batch_num:', batch_num)
+      print('shape loss_preds', loss_preds.shape)
+      print('shape loss_Y', loss_Y.shape)
+      print('shape torch.isnan(loss_Y)', torch.isnan(loss_Y).shape)
+      
       d_loss = criterion(loss_preds[~torch.isnan(loss_Y)], loss_Y[~torch.isnan(loss_Y)])
 
 
