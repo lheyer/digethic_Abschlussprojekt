@@ -25,7 +25,7 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
   for epoch in range(num_epochs):
     
     
-    avg_dc_loss = 0
+    avg_d_loss = 0
     avg_ec_loss = 0
     avg_loss = 0
 
