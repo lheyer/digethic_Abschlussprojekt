@@ -83,14 +83,14 @@ class Meteo_DS(Dataset):
       self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])]
     
     print(self.XY.iloc[0])
-    print('now explode depths')
+    #print('now explode depths')
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]
-    print('exploded depths')
-    print('self.X 1. row: ',self.X.iloc[0])
-    print('now convert to numpy')
+    #print('exploded depths')
+    #print('self.X 1. row: ',self.X.iloc[0])
+    #print('now convert to numpy')
     self.X = self.X.to_numpy().reshape(self.n_depths,-1,9)
     
-    print('self.X 1. row: ',self.X.iloc[0])
+    print('self.X 1. row: ',self.X[0][0])
     # date vector                                  
     helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
     self.dates = helper(self.XY.date.values)
