@@ -68,7 +68,7 @@ class Meteo_DS(Dataset):
 
     self.XY.loc[:,'tm_yday'] = self.XY.date.dt.dayofyear
     self.XY.loc[:,'depths'] = self.XY.tm_yday.apply(lambda x : self.lake_depths)
-    print(self.XY.depths.unique())
+    print(self.XY.iloc[0].depths)
 
     self.phys_list = ['tm_yday','ShortWave','LongWave',\
                       'AirTemp','RelHum','WindSpeed','Rain','Snow']
