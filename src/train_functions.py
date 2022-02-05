@@ -1,12 +1,13 @@
 ###
 import phys_functions as pf
+import torch
 from torch.nn.utils.clip_grad import clip_grad_norm_
 from tqdm import tqdm
 
 
 def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas, device, \
              ec_lambda = 0.1, dc_lambda = 0.,lambda1 = 0.0, ec_threshold = 36, \
-             begin_loss_ind = 50, grad_clip = 1.0, verbose=False):
+             begin_loss_ind = 50, grad_clip = 1.0, save_path=None, verbose=False):
   """
   grad_clip = 1.0 #how much to clip the gradient 2-norm in training
   lambda1 = 0.0000#magnitude hyperparameter of l1 loss
@@ -89,6 +90,15 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
       print('Training  sum of losses: {} \n'.format(avg_loss/len(train_loader)))
       print('Training  data loss: {} \n'.format(avg_dc_loss/len(train_loader)))
       print('Training  EC loss: {} \n'.format(avg_ec_loss/len(train_loader)))
+
+  print('training finished')
+  
+  if save_path:
+    print('model save to: ',str(save_path))
+    state = {'state_dict': model.state_dict(),
+             'optimizer': optimizer.state_dict()}
+    torch.save(state, str(save_path))
+
 
   return epoch,loss
 
