@@ -105,9 +105,14 @@ class Meteo_DS(Dataset):
   def get_labels(self,Y):
     
     if depth in Y.columns:
+      print('get labels from buoy data')
       Y_labels = Y.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
+      print(Y_labels.iloc[0])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
+      print(Y_labels.columns)
+      Y_labels = Y_labels.T
       Y_labels.loc[:,'depth'] = Y_labels.index
+      print(Y_labels.iloc[0])
       Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
       Y_labels = Y_labels.drop(columns=['depth']).to_numpy()
       
