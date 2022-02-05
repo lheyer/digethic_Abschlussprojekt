@@ -59,6 +59,7 @@ class Meteo_DS(Dataset):
 
     self.depth_areas = np.array(depth_areas)
     self.n_depths = self.depth_areas.size
+    print(self.n_depths)
     self.lake_depths = np.array([i*0.5 for i in range(self.n_depths)])
 
     self.XY = pd.merge(self.X,self.Y,on='date')
@@ -82,7 +83,7 @@ class Meteo_DS(Dataset):
     if time_slice:
       self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])]
     
-    print(self.XY.iloc[0])
+    #print(self.XY.iloc[0])
     #print('now explode depths')
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]
     #print('exploded depths')
@@ -90,7 +91,7 @@ class Meteo_DS(Dataset):
     #print('now convert to numpy')
     self.X = self.X.to_numpy().reshape(self.n_depths,-1,9)
     
-    print('self.X 1. row: ',self.X[0][0])
+    #print('self.X 1. row: ',self.X[0][0])
     # date vector                                  
     helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
     self.dates = helper(self.XY.date.values)
@@ -115,9 +116,9 @@ class Meteo_DS(Dataset):
       index_arr = ['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)]
       print('get labels from buoy data')
       Y_labels = Y.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
-      print(Y_labels.iloc[0])
+      #print(Y_labels.iloc[0])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
-      print(Y_labels.columns)
+      #print(Y_labels.columns)
       Y_labels = Y_labels.T
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
       Y_labels.reindex(index_arr, fill_value=np.nan)
