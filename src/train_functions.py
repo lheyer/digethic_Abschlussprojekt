@@ -1,5 +1,5 @@
 ###
-import phys_functions as pf
+from . import phys_functions as pf
 import torch
 from torch.nn.utils.clip_grad import clip_grad_norm_
 from tqdm import tqdm
