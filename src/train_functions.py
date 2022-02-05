@@ -98,9 +98,8 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
         avg_ec_loss += ec_loss.item()
         
       if lambda1 > 0:
-        avg_reg1_loss += reg1_loss.item(
-    
-    
+        avg_reg1_loss += reg1_loss.item()
+   
     if verbose:
       print('Training  sum of losses: {} \n'.format(avg_loss/len(train_loader)))
       print('Training  data loss: {} \n'.format(avg_d_loss/len(train_loader)))
