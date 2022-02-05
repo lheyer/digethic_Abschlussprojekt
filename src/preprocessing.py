@@ -109,7 +109,7 @@ class Meteo_DS(Dataset):
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       Y_labels.loc[:,'depth'] = Y_labels.index
       Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
-      Y_labels = Y_labels.drop(columns=['depth'])
+      Y_labels = Y_labels.drop(columns=['depth']).to_numpy()
       
     else:
       Y_labels = Y.drop('date', axis=1).T #.values
