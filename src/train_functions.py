@@ -27,6 +27,7 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
     
     avg_d_loss = 0
     avg_ec_loss = 0
+    avg_reg1_loss = 0
     avg_loss = 0
 
     for batch_num, batch in enumerate(tqdm(train_loader)):
@@ -92,8 +93,12 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
       optimizer.step()
 
       avg_d_loss += d_loss.item()
-      avg_ec_loss += ec_loss.item()
       avg_loss += loss.item()
+      if ec_lambda > 0:
+        avg_ec_loss += ec_loss.item()
+        
+      if lambda1 > 0:
+        avg_reg1_loss += reg1_loss.item(
     
     
     if verbose:
