@@ -10,11 +10,11 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
              ec_lambda = 0.1, dc_lambda = 0.,lambda1 = 0.0, ec_threshold = 36, \
              begin_loss_ind = 50, grad_clip = 1.0, save_path=None, verbose=False):
   """
-  grad_clip = 1.0 #how much to clip the gradient 2-norm in training
-  lambda1 = 0.0000#magnitude hyperparameter of l1 loss
-  ec_lambda = 0.1 #magnitude hyperparameter of ec loss
-  ec_threshold = 36 #anything above this far off of energy budget closing is penalized
-  dc_lambda = 0. #magnitude hyperparameter of depth-density constraint (dc) loss
+  grad_clip: how much to clip the gradient 2-norm in training
+  lambda1: magnitude hyperparameter of regularization loss (L1-Norm)
+  ec_lambda: magnitude hyperparameter of ec loss
+  ec_threshold: anything above this far off of energy budget closing is penalized
+  dc_lambda: magnitude hyperparameter of depth-density constraint (dc) loss
   begin_loss_ind = 50#index in sequence where we begin to calculate error or predict
   """
   
@@ -58,7 +58,7 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
       loss_preds = preds[:, begin_loss_ind:]
       loss_Y = Y[:, begin_loss_ind:]
 
-      dc_loss = criterion(loss_preds, loss_Y)
+      d_loss = criterion(loss_preds, loss_Y)
 
 
       if ec_lambda > 0:
@@ -68,8 +68,17 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
                                     depth_areas, len(depth_areas), 24, \
                                     use_gpu=False, combine_days=1)
       
+      if lambda1 > 0:
+        l1_parameters = []
+        for name, parameter in model.named_parameters():
+          if 'bias' in name:
+            continue
+          else:
+            l1_parameters.append(parameter.view(-1))
+        reg1_loss = torch.abs(torch.cat(l1_parameters)).sum()
       
-      loss = dc_loss + ec_lambda * ec_loss + lambda1*reg1_loss 
+      
+      loss = d_loss + ec_lambda * ec_loss + lambda1*reg1_loss 
 
       
       loss.backward(retain_graph=False)
@@ -82,14 +91,14 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
 
       optimizer.step()
 
-      avg_dc_loss += dc_loss.item()
+      avg_d_loss += d_loss.item()
       avg_ec_loss += ec_loss.item()
       avg_loss += loss.item()
     
     
     if verbose:
       print('Training  sum of losses: {} \n'.format(avg_loss/len(train_loader)))
-      print('Training  data loss: {} \n'.format(avg_dc_loss/len(train_loader)))
+      print('Training  data loss: {} \n'.format(avg_d_loss/len(train_loader)))
       print('Training  EC loss: {} \n'.format(avg_ec_loss/len(train_loader)))
 
   print('training finished')
