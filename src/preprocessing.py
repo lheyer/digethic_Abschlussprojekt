@@ -113,7 +113,7 @@ class Meteo_DS(Dataset):
   def get_labels(self,Y):
     
     if 'depth' in Y.columns:
-      index_arr = ['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)]
+      index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
       print('index_arr: ',index_arr)
       print('index_arr shape: ',index_arr.shape)
       print('get labels from buoy data')
