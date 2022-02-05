@@ -121,6 +121,7 @@ class Meteo_DS(Dataset):
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       #print(Y_labels.columns)
       Y_labels = Y_labels.T
+      print('Y_label.index: ',Y_labels.index)
       print('Y_labels shape: ',Y_labels.shape)
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
       print('Y_labels shape: ',Y_labels.shape)
