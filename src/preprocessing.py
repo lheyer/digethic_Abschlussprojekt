@@ -127,6 +127,7 @@ class Meteo_DS(Dataset):
       print('Y_label.index: ',Y_labels.index)
       print('Y_labels shape: ',Y_labels.shape)
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
+      print('Y_label.index: ',Y_labels.index)
       print('Y_labels shape: ',Y_labels.shape)
       Y_labels.reindex(index_arr, fill_value=np.nan)
       Y_labels.loc[:,'depth'] = Y_labels.index
