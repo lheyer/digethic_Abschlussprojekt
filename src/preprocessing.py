@@ -82,6 +82,8 @@ class Meteo_DS(Dataset):
     if time_slice:
       self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])]
     
+    print(self.XY.iloc[0])
+    print('now explode depths')
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]
     print('exploded depths')
     print('self.X 1. row: ',self.X.iloc[0])
