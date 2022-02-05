@@ -111,7 +111,7 @@ class Meteo_DS(Dataset):
 
   def get_labels(self,Y):
     
-    if depth in Y.columns:
+    if 'depth' in Y.columns:
       print('get labels from buoy data')
       Y_labels = Y.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
       print(Y_labels.iloc[0])
