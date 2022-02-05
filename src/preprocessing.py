@@ -39,11 +39,12 @@ class Meteo_DS(Dataset):
   """
 
 
-  def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list, ice_csv_path =None, transform=None):
+  def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list, time_slice = None, ice_csv_path =None, transform=None):
     """
     Args:
         meteo_csv_path (string): Path to the csv file with meteorological data
         pred_csv_path (string): Path to the csv file with temperature predictions
+        time_slice (list): [min_date, max_date] min and max date as string (%Y%m%d) to choose time interval for data
         ice_csv_path (string, optional): Path to the csv file with ice flags
         depth_areas (list): List with depth areas (float) for selected lake
         transform (callable, optional): Optional transform to be applied
@@ -76,7 +77,9 @@ class Meteo_DS(Dataset):
       self.XY = self.get_ice_mask()
       self.phys_list.append('ice')
       print(self.phys_list)
-
+    
+    if time_slice:
+      self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])]
     
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]\
                                         .to_numpy().reshape(self.n_depths,-1,9)
