@@ -121,7 +121,7 @@ class Meteo_DS(Dataset):
       Y_labels.loc[:,'depth'] = Y_labels.index
       print(Y_labels.iloc[0])
       Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
-      Y_labels = Y_labels.drop(columns=['depth']).to_numpy()
+      Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
       
     else:
       print('get labels from sim data')
