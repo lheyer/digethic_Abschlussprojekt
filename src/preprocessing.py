@@ -68,6 +68,7 @@ class Meteo_DS(Dataset):
 
     self.XY.loc[:,'tm_yday'] = self.XY.date.dt.dayofyear
     self.XY.loc[:,'depths'] = self.XY.tm_yday.apply(lambda x : self.lake_depths)
+    print(self.XY.depths.unique())
 
     self.phys_list = ['tm_yday','ShortWave','LongWave',\
                       'AirTemp','RelHum','WindSpeed','Rain','Snow']
@@ -83,7 +84,7 @@ class Meteo_DS(Dataset):
     
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]\
                                         .to_numpy().reshape(self.n_depths,-1,9)
-
+    print('self.X 1. row: ',self.X.iloc[0])
     # date vector                                  
     helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
     self.dates = helper(self.XY.date.values)
@@ -117,6 +118,7 @@ class Meteo_DS(Dataset):
       Y_labels = Y_labels.drop(columns=['depth']).to_numpy()
       
     else:
+      print('get labels from sim data')
       Y_labels = Y.drop('date', axis=1).T #.values
       Y_labels.loc[:,'depth'] = Y_labels.index #.apply(lambda x: float(x.split('_')[-1]))
       Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
