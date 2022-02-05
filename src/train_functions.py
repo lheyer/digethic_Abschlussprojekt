@@ -58,8 +58,10 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
 
       loss_preds = preds[:, begin_loss_ind:]
       loss_Y = Y[:, begin_loss_ind:]
-
-      d_loss = criterion(loss_preds, loss_Y)
+      
+      # [~torch.isnan(loss_Y)] for not including nan-values in labels used for calculating MSE-loss 
+      # though not important for the other loss metrics
+      d_loss = criterion(loss_preds[~torch.isnan(loss_Y)], loss_Y[~torch.isnan(loss_Y)])
 
 
       if ec_lambda > 0:
