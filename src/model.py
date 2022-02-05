@@ -9,7 +9,7 @@ class GeneralLSTM(torch.nn.Module):
   num_layers: for stacked LSTM-Layers num_layers >1 
   """
 
-  def __init__(self, input_size, num_hidden_units, batch_size, num_layers=1):
+  def __init__(self, input_size, num_hidden_units, batch_size, device, num_layers=1):
     """
     Args:
         input_size (int): The number of expected features in the input x
@@ -24,6 +24,7 @@ class GeneralLSTM(torch.nn.Module):
     self.num_layers = num_layers
     self.num_hidden_units = num_hidden_units
     self.batch_size = batch_size
+    self.device = device
 
     self.lstm = torch.nn.LSTM(self.input_size, self.num_hidden_units, self.num_layers,batch_first=True)
     # -> batch_size, sequence_len, feature_len/input size
@@ -33,8 +34,8 @@ class GeneralLSTM(torch.nn.Module):
 
     
   def init_hidden(self,batch_size):
-    h0 = torch.zeros(self.num_layers, batch_size, self.num_hidden_units).to(device)
-    c0 = torch.zeros(self.num_layers, batch_size, self.num_hidden_units).to(device)
+    h0 = torch.zeros(self.num_layers, batch_size, self.num_hidden_units).to(self.device)
+    c0 = torch.zeros(self.num_layers, batch_size, self.num_hidden_units).to(self.device)
     
     return (c0,h0)
 
