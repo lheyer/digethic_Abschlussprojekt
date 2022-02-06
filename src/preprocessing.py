@@ -119,6 +119,7 @@ class Meteo_DS(Dataset):
       print('index_arr shape: ',index_arr.shape)
       print('get labels from buoy data')
       Y_labels = Y[['date','depth','temp']]
+      Y_labels.date = Y_labels.index
       Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
       print('Y_labels shape after rounding depths: ',Y_labels.shape)
       print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
