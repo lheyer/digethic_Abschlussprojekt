@@ -111,6 +111,7 @@ class Meteo_DS(Dataset):
     return X
 
   def get_labels(self,Y):
+    print('Y shape: ',Y.shape)
     
     if 'depth' in Y.columns:
       index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
