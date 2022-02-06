@@ -120,16 +120,18 @@ class Meteo_DS(Dataset):
       print('get labels from buoy data')
       Y_labels = Y
       Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
+      print('Y_labels shape after rounding depths: ',Y_labels.shape)
       Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
-      #print(Y_labels.iloc[0])
+      print('Y_labels shape after pivot: ',Y_labels.shape)
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       #print(Y_labels.columns)
+      print('Y_labels shape after setting new columns: ',Y_labels.shape)
       Y_labels = Y_labels.T
       print('Y_label.index: ',Y_labels.index)
-      print('Y_labels shape: ',Y_labels.shape)
+      print('Y_labels shape after transpose: ',Y_labels.shape)
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
       print('Y_label.index: ',Y_labels.index)
-      print('Y_labels shape: ',Y_labels.shape)
+      print('Y_labels shape after reindexing: ',Y_labels.shape)
       Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
       print('Y_label.index: ',Y_labels.index)
       print('Y_labels shape: ',Y_labels.shape)
