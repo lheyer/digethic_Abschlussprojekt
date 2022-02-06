@@ -59,7 +59,7 @@ class Meteo_DS(Dataset):
 
     self.depth_areas = np.array(depth_areas)
     self.n_depths = self.depth_areas.size
-    print(self.n_depths)
+    # print(self.n_depths)
     self.lake_depths = np.array([i*0.5 for i in range(self.n_depths)])
 
     self.XY = pd.merge(self.X,self.Y,on='date')
@@ -69,7 +69,7 @@ class Meteo_DS(Dataset):
 
     self.XY.loc[:,'tm_yday'] = self.XY.date.dt.dayofyear
     self.XY.loc[:,'depths'] = self.XY.tm_yday.apply(lambda x : self.lake_depths)
-    print(self.XY.iloc[0].depths)
+    # print(self.XY.iloc[0].depths)
 
     self.phys_list = ['tm_yday','ShortWave','LongWave',\
                       'AirTemp','RelHum','WindSpeed','Rain','Snow']
@@ -115,31 +115,31 @@ class Meteo_DS(Dataset):
     
     if 'depth' in Y.columns:
       index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
-      print('index_arr: ',index_arr)
-      print('index_arr shape: ',index_arr.shape)
-      print('get labels from buoy data')
+      # print('index_arr: ',index_arr)
+      # print('index_arr shape: ',index_arr.shape)
+      # print('get labels from buoy data')
       Y_labels = Y[['date','depth','temp']]
       Y_labels.date = Y_labels.index
       Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
-      print('Y_labels shape after rounding depths: ',Y_labels.shape)
-      print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
+      # print('Y_labels shape after rounding depths: ',Y_labels.shape)
+      # print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
       Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
-      print('Y_labels shape after pivot: ',Y_labels.shape)
-      print('Y_labels rows after pivot: \n',Y_labels.iloc[:3])
+      # print('Y_labels shape after pivot: ',Y_labels.shape)
+      # print('Y_labels rows after pivot: \n',Y_labels.iloc[:3])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       #print(Y_labels.columns)
-      print('Y_labels shape after setting new columns: ',Y_labels.shape)
+      # print('Y_labels shape after setting new columns: ',Y_labels.shape)
       Y_labels = Y_labels.T
-      print('Y_label.index: ',Y_labels.index)
-      print('Y_labels shape after transpose: ',Y_labels.shape)
+      # print('Y_label.index: ',Y_labels.index)
+      # print('Y_labels shape after transpose: ',Y_labels.shape)
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
-      print('Y_label.index: ',Y_labels.index)
-      print('Y_labels shape after reindexing: ',Y_labels.shape)
+      # print('Y_label.index: ',Y_labels.index)
+      # print('Y_labels shape after reindexing: ',Y_labels.shape)
       Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
-      print('Y_label.index: ',Y_labels.index)
-      print('Y_labels shape: ',Y_labels.shape)
+      # print('Y_label.index: ',Y_labels.index)
+      # print('Y_labels shape: ',Y_labels.shape)
       Y_labels.loc[:,'depth'] = Y_labels.index
-      print(Y_labels.iloc[0])
+      # print(Y_labels.iloc[0])
       Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
       Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
       
