@@ -124,6 +124,7 @@ class Meteo_DS(Dataset):
       print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
       Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
       print('Y_labels shape after pivot: ',Y_labels.shape)
+      print('Y_labels rows after pivot: \n',Y_labels.iloc[:3])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       #print(Y_labels.columns)
       print('Y_labels shape after setting new columns: ',Y_labels.shape)
