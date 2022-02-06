@@ -118,7 +118,7 @@ class Meteo_DS(Dataset):
       print('index_arr: ',index_arr)
       print('index_arr shape: ',index_arr.shape)
       print('get labels from buoy data')
-      Y_labels = Y
+      Y_labels = Y[['date','depth','temp']]
       Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
       print('Y_labels shape after rounding depths: ',Y_labels.shape)
       Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
