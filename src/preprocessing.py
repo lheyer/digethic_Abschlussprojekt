@@ -171,7 +171,7 @@ class Meteo_DS(Dataset):
   def __getitem__(self, index):
     
     if self.testing:
-      X = [self.X.astype('float')[index], self.X.astype('float')[index], self.dates[index], self.labels.astype('float')[index]]
+      X = [self.Xt.astype('float'), self.X.astype('float'), self.dates, self.labels.astype('float')]
     else:
       X = self.X.astype('float') #.reshape(-1,7)
       X = X[index]
