@@ -39,7 +39,7 @@ class Meteo_DS(Dataset):
   """
 
 
-  def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list, time_slice = None, ice_csv_path =None, transform=None):
+  def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list, time_slice = None, ice_csv_path =None, transform=None, testing=False):
     """
     Args:
         meteo_csv_path (string): Path to the csv file with meteorological data
@@ -56,6 +56,7 @@ class Meteo_DS(Dataset):
     self.Ycols = self.Y.columns
     
     self.transform = transform
+    self.testing = testing
 
     self.depth_areas = np.array(depth_areas)
     self.n_depths = self.depth_areas.size
@@ -168,9 +169,12 @@ class Meteo_DS(Dataset):
     return len(self.X)
 
   def __getitem__(self, index):
-
-    X = self.X.astype('float') #.reshape(-1,7)
-    X = X[index]
+    
+    if self.testing:
+      X = [self.X.astype('float')[index], self.X.astype('float')[index], self.labels.astype('float')[index]]
+    else:
+      X = self.X.astype('float') #.reshape(-1,7)
+      X = X[index]
 
     return X
   
