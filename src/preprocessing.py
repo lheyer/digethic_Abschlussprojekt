@@ -113,7 +113,7 @@ class Meteo_DS(Dataset):
     self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.col_list].rename(columns={'depths':'depth'})
     
     
-    if 'depth' in Y.columns:
+    if 'depth' in self.Y.columns:
       index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
       Y_labels = Y[['date','depth','temp']]
       Y_labels = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
