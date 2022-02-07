@@ -244,13 +244,13 @@ class SlidingWindow(Dataset):
     """
     
     #assert len(x)==len(y)
-    self.n_depths=50
-    self.n_dates = features.shape[0]
+    self.n_depths = int(50)
+    self.n_dates = int(features.shape[0])
     self.window = int(window)
     self.step = int(step)
-    self.seq_per_depth = np.floor(self.n_dates/ self.window)
-    self.win_per_seq = np.floor(self.window  / self.step) - 1
-    self.n_train_seq = self.seq_per_depth * self.n_depths * self.win_per_seq
+    self.seq_per_depth = int(np.floor(self.n_dates/ self.window))
+    self.win_per_seq = int(np.floor(self.window  / self.step) - 1)
+    self.n_train_seq = int(self.seq_per_depth * self.n_depths * self.win_per_seq)
     
     self.x = torch.Tensor(features.astype(np.float32))
 
