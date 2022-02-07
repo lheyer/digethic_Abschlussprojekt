@@ -95,7 +95,7 @@ class Meteo_DS(Dataset):
     self.XY.loc[:,'depths'] = self.XY.tm_yday.apply(lambda x : self.lake_depths)
     
     
-    self.col_list=np.append(np.array(['tm_yday','depths']),self.Xcols)
+    self.col_list=np.append(np.array(['tm_yday','depths','ice']),self.Xcols)
     # print(self.XY.iloc[0].depths)
     
     self.phys_list = ['tm_yday','ShortWave','LongWave',\
