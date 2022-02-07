@@ -244,6 +244,13 @@ class SlidingWindow(Dataset):
     """
     
     #assert len(x)==len(y)
+    self.n_dates = features.shape[0]
+    self.window = int(window)
+    self.step = int(step)
+    self.seq_per_depth = np.floor(self.n_dates/ self.window)
+    self.win_per_seq = np.floor(self.window  / self.step) - 1
+    self.n_train_seq = self.seq_per_depth * self.n_depths * self.win_per_seq
+    
     self.x = torch.Tensor(features.astype(np.float32))
 
     self.y = torch.Tensor(labels.astype(np.float32))#)
@@ -254,27 +261,50 @@ class SlidingWindow(Dataset):
     else:
       self.phys_data = None
 
-    self.window = int(window)
-    self.step = step
     self.label_window = label_window
     #self.xlen = int(self.x.shape[1])
     self.xlen = self.x.size(1)
     self.start_index = 0
+    
+    self.new = self.x[:50,0:self.window]
+    self.Xt = torch.empty((self.n_train_seq,self.window,8))
+    self.Y = torch.empty((self.n_train_seq,self.window))
+    for i in range(self.seq_per_depth):
+      self.Xt[i*50:(i+1)*50,:,:] = self.x[:,i*self.step:i*self.step+self.window,:]
+      self.Y[i*50:(i+1)*50,:] = self.y[:,i*self.step:i*self.step+self.window]
+      
+    if self.phys_data:
+      self.Phys = torch.empty((self.n_train_seq,self.window,9))
+      self.Dates = torch.empty((self.n_train_seq,self.window))
+      for i in range(self.seq_per_depth):
+        self.Phys[i*50:(i+1)*50,:,:] = self.phys_data[:,i*self.step:i*self.step+self.window,:]
+        self.Dates[i*50:(i+1)*50,:] = self.dates[:,i*self.step:i*self.step+self.window]
 
 
 
   def __getitem__(self,idx):
-    x_start = idx*self.step
-    x_end = x_start+self.window
-    y_start = x_end
-    y_end = x_end+self.label_window
+
 
     if isinstance(self.phys_data,torch.Tensor):
       #print(' found phys data')
-      return self.x[:,x_start:x_end,:], self.phys_data[:,x_start:x_end,:], self.dates[x_start:x_end], self.y[:,x_start:x_end] #[:,y_start:y_end]
+      return self.Xt[idx], self.Phys[idx], self.Dates[idx], self.Y[idx] #[:,y_start:y_end]
     else:
       #print('did not find phys data')
-      return self.x[:,x_start:x_end,:], self.y[:,y_start:y_end]
+      return self.Xt[idx], self.Y[idx]
+  
+  # def __getitem__(self,idx):
+  #   x_start = idx*self.step
+  #   x_end = x_start+self.window
+  #   y_start = x_end
+  #   y_end = x_end+self.label_window
+
+  #   if isinstance(self.phys_data,torch.Tensor):
+  #     #print(' found phys data')
+  #     return self.x[:,x_start:x_end,:], self.phys_data[:,x_start:x_end,:], self.dates[x_start:x_end], self.y[:,x_start:x_end] #[:,y_start:y_end]
+  #   else:
+  #     #print('did not find phys data')
+  #     return self.x[:,x_start:x_end,:], self.y[:,y_start:y_end]
+  
       
 
   def __len__(self):
