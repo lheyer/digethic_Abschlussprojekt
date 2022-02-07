@@ -135,7 +135,7 @@ class Meteo_DS(Dataset):
     
     #print(self.XY.iloc[0])
     #print('now explode depths')
-    self.X = self.XY.sort_values(['depths','date'])[self.phys_list]
+    self.X = self.XY.sort_values(['depth','date'])[self.phys_list]
     #print('exploded depths')
     #print('self.X 1. row: ',self.X.iloc[0])
     #print('now convert to numpy')
