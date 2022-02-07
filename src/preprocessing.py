@@ -151,7 +151,7 @@ class Meteo_DS(Dataset):
       print(np.max(self.Xt))
       print(np.min(self.Xt))
    
-    self.labels = self.get_labels(self.XY[self.Ycols])
+    self.labels = self.get_labels(self.XY)
 
   def scale(self,X):
     scaler = MinMaxScaler()
