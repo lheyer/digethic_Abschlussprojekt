@@ -27,7 +27,26 @@ lake_depth_areas_dict['Lake Mendota'] = np.array([\
         2560125,2560125,820925,820925,216125])
 
 
+#############
+### utils ###
+#############
 
+def stack_depth_cols(df):
+  new_df = pd.DataFrame(columns=['date','depth','temp'])
+  for col in df.columns:
+    if col in ['date','exper_n','exper_id']:
+      pass
+    else:
+      d = col.split('_')[1]
+      #print(d)
+
+      tmp_df = pd.DataFrame(columns=['date','depth','temp'])
+      tmp_df.temp = df[col]
+      #print(tmp_df.shape)
+      tmp_df.date = df.index
+      tmp_df.depth = float(col.split('_')[1])
+      new_df = new_df.append(tmp_df)
+  return new_df
 
 #########################
 ### Dataset classes ###
@@ -64,29 +83,59 @@ class Meteo_DS(Dataset):
     self.lake_depths = np.array([i*0.5 for i in range(self.n_depths)])
 
     self.XY = pd.merge(self.X,self.Y,on='date')
+    
+    if time_slice:
+      self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])] 
+      
     self.XY = self.XY.sort_values(by='date').reset_index(drop=True)
 
     self.n_steps = self.XY.shape[0]
 
     self.XY.loc[:,'tm_yday'] = self.XY.date.dt.dayofyear
     self.XY.loc[:,'depths'] = self.XY.tm_yday.apply(lambda x : self.lake_depths)
+    
+    
+    self.col_list=np.append(np.array(['tm_yday','depths']),self.Xcols)
     # print(self.XY.iloc[0].depths)
-
+    
     self.phys_list = ['tm_yday','ShortWave','LongWave',\
-                      'AirTemp','RelHum','WindSpeed','Rain','Snow']
+                  'AirTemp','RelHum','WindSpeed','Rain','Snow']
 
     if ice_csv_path is not None:
       self.ice_csv_path = ice_csv_path
       self.XY = self.get_ice_mask()
       self.phys_list.append('ice')
       print(self.phys_list)
+      
+    helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
+    self.dates = helper(self.XY.date.values)
     
-    if time_slice:
-      self.XY= self.XY[(self.XY.date>time_slice[0])&(self.XY.date<time_slice[1])]
+    self.X = self.XY.explode('depths').sort_values(['depths','date'])[col_list].rename(columns={'depths':'depth'})
+    
+    
+    if 'depth' in Y.columns:
+      index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
+      Y_labels = Y[['date','depth','temp']]
+      Y_labels = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
+      Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp'])
+      Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
+      Y_labels = Y_labels.T
+      Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
+      Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
+      self.new_df = stack_depth_cols(self.XY[self.Ycols])   
+      
+    else:
+      self.new_df = stack_depth_cols(self.XY[self.Ycols])
+
+    
+    self.XY = pd.merge(self.X,self.new_df,on=['date','depth'])
+
+
+    
     
     #print(self.XY.iloc[0])
     #print('now explode depths')
-    self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.phys_list]
+    self.X = self.XY.sort_values(['depths','date'])[self.phys_list]
     #print('exploded depths')
     #print('self.X 1. row: ',self.X.iloc[0])
     #print('now convert to numpy')
@@ -94,8 +143,7 @@ class Meteo_DS(Dataset):
     
     #print('self.X 1. row: ',self.X[0][0])
     # date vector                                  
-    helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
-    self.dates = helper(self.XY.date.values)
+    
 
 
     if self.transform:
@@ -112,45 +160,48 @@ class Meteo_DS(Dataset):
     return X
 
   def get_labels(self,Y):
-    print('Y shape: ',Y.shape)
     
-    if 'depth' in Y.columns:
-      index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
-      # print('index_arr: ',index_arr)
-      # print('index_arr shape: ',index_arr.shape)
-      # print('get labels from buoy data')
-      Y_labels = Y[['date','depth','temp']]
-      Y_labels.date = Y_labels.index
-      Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
-      # print('Y_labels shape after rounding depths: ',Y_labels.shape)
-      # print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
-      Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
-      # print('Y_labels shape after pivot: ',Y_labels.shape)
-      # print('Y_labels rows after pivot: \n',Y_labels.iloc[:3])
-      Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
-      #print(Y_labels.columns)
-      # print('Y_labels shape after setting new columns: ',Y_labels.shape)
-      Y_labels = Y_labels.T
-      # print('Y_label.index: ',Y_labels.index)
-      # print('Y_labels shape after transpose: ',Y_labels.shape)
-      Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
-      # print('Y_label.index: ',Y_labels.index)
-      # print('Y_labels shape after reindexing: ',Y_labels.shape)
-      Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
-      # print('Y_label.index: ',Y_labels.index)
-      # print('Y_labels shape: ',Y_labels.shape)
-      Y_labels.loc[:,'depth'] = Y_labels.index
-      # print(Y_labels.iloc[0])
-      Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
-      Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
+    Y_labels = Y.temp.to_numpy()
+    
+    # print('Y shape: ',Y.shape)
+    
+    # if 'depth' in Y.columns:
+    #   index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
+    #   # print('index_arr: ',index_arr)
+    #   # print('index_arr shape: ',index_arr.shape)
+    #   # print('get labels from buoy data')
+    #   Y_labels = Y[['date','depth','temp']]
+    #   Y_labels.date = Y_labels.index
+    #   Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
+    #   # print('Y_labels shape after rounding depths: ',Y_labels.shape)
+    #   # print('Y_labels rows rounding depths: \n',Y_labels.iloc[:3])
+    #   Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp']).reset_index(drop=True)
+    #   # print('Y_labels shape after pivot: ',Y_labels.shape)
+    #   # print('Y_labels rows after pivot: \n',Y_labels.iloc[:3])
+    #   Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
+    #   #print(Y_labels.columns)
+    #   # print('Y_labels shape after setting new columns: ',Y_labels.shape)
+    #   Y_labels = Y_labels.T
+    #   # print('Y_label.index: ',Y_labels.index)
+    #   # print('Y_labels shape after transpose: ',Y_labels.shape)
+    #   Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
+    #   # print('Y_label.index: ',Y_labels.index)
+    #   # print('Y_labels shape after reindexing: ',Y_labels.shape)
+    #   Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
+    #   # print('Y_label.index: ',Y_labels.index)
+    #   # print('Y_labels shape: ',Y_labels.shape)
+    #   Y_labels.loc[:,'depth'] = Y_labels.index
+    #   # print(Y_labels.iloc[0])
+    #   Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
+    #   Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
       
-    else:
-      print('get labels from sim data')
-      Y_labels = Y.drop('date', axis=1).T #.values
-      Y_labels.loc[:,'depth'] = Y_labels.index #.apply(lambda x: float(x.split('_')[-1]))
-      Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
-      Y_labels = Y_labels.sort_values('depth')
-      Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
+    # else:
+    #   print('get labels from sim data')
+    #   Y_labels = Y.drop('date', axis=1).T #.values
+    #   Y_labels.loc[:,'depth'] = Y_labels.index #.apply(lambda x: float(x.split('_')[-1]))
+    #   Y_labels.depth = Y_labels.depth.apply(lambda x: float(x.split('_')[-1]))
+    #   Y_labels = Y_labels.sort_values('depth')
+    #   Y_labels = Y_labels.drop(columns=['depth']).iloc[:self.n_depths].to_numpy()
       
     return Y_labels
 
