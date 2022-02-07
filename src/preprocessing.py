@@ -115,14 +115,14 @@ class Meteo_DS(Dataset):
     
     if 'depth' in self.Y.columns:
       index_arr = np.array(['temp_'+str(i) for i in np.arange(0,self.n_depths*0.5,0.5)])
-      Y_labels = Y[['date','depth','temp']]
+      Y_labels = self.Y[['date','depth','temp']]
       Y_labels = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
       Y_labels = Y_labels.pivot_table(index='date',columns=['depth'],values=['temp'])
       Y_labels.columns = ["_".join((i,str(j))) for i,j in Y_labels.columns]
       Y_labels = Y_labels.T
       Y_labels = Y_labels[Y_labels.index.isin(index_arr)]
       Y_labels = Y_labels.reindex(index_arr, fill_value=np.nan)
-      self.new_df = stack_depth_cols(self.XY[self.Ycols])   
+      self.new_df = stack_depth_cols(Y_labels.T)   
       
     else:
       self.new_df = stack_depth_cols(self.XY[self.Ycols])
