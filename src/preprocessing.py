@@ -110,7 +110,7 @@ class Meteo_DS(Dataset):
     helper = np.vectorize(lambda x: dt.date.toordinal(pd.Timestamp(x).to_pydatetime()))
     self.dates = helper(self.XY.date.values)
     
-    self.X = self.XY.explode('depths').sort_values(['depths','date'])[col_list].rename(columns={'depths':'depth'})
+    self.X = self.XY.explode('depths').sort_values(['depths','date'])[self.col_list].rename(columns={'depths':'depth'})
     
     
     if 'depth' in Y.columns:
