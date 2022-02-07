@@ -274,7 +274,7 @@ class SlidingWindow(Dataset):
       self.Xt[i*50:(i+1)*50,:,:] = self.x[:,i*self.step:i*self.step+self.window,:]
       self.Y[i*50:(i+1)*50,:] = self.y[:,i*self.step:i*self.step+self.window]
       
-    if self.phys_data:
+    if self.phys_data is not None:
       self.Phys = torch.empty((self.n_train_seq,self.window,9))
       self.Dates = torch.empty((self.n_train_seq,self.window))
       for i in range(self.seq_per_depth):
