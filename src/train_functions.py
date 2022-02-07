@@ -35,10 +35,10 @@ def train_ec(model, train_loader, optimizer, criterion, num_epochs, depth_areas,
       optimizer.zero_grad()
 
       # forward pass
-      X= batch[0][0].to(device)
-      X_phys = batch[1][0].to(device)
-      dates = batch[2][0].to(device)
-      Y= batch[3][0][:,:,np.newaxis].to(device)
+      X= batch[0].to(device)  #[0][0].to(device)
+      X_phys = batch[1].to(device) #[1][0].to(device)
+      dates = batch[2].to(device) #[2][0].to(device)
+      Y= batch[3][:,:,np.newaxis].to(device) #[3][0][:,:,np.newaxis].to(device)
       #print(X.size())
       #print(Y.size())
       #Y.to(device)
