@@ -244,6 +244,7 @@ class SlidingWindow(Dataset):
     """
     
     #assert len(x)==len(y)
+    self.n_depth=50
     self.n_dates = features.shape[0]
     self.window = int(window)
     self.step = int(step)
