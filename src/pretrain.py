@@ -15,9 +15,9 @@ save_path = None
 ##################
 
 #### change paths to something interactive (--> if __name__ == '__main__' block needed)
-mendota_meteo_path = '/content/drive/MyDrive/digethic_Project/data/example_input/raw_data/mendota_meteo.csv'
-predict_pb0_path = '/content/drive/MyDrive/digethic_Project/data/example_input/raw_data/me_predict_pb0.csv'
-ice_flags_path = '/content/drive/MyDrive/digethic_Project/data/example_input/raw_data/mendota_pretrainer_ice_flags.csv'
+mendota_meteo_path = 'data/pretrain/mendota_meteo.csv'
+predict_pb0_path = 'data/predictions/me_predict_pb0.csv'
+ice_flags_path = 'data/pretrain/mendota_pretrainer_ice_flags.csv'
 
 ###################
 ### Import data ###
