@@ -38,7 +38,7 @@ def stack_depth_cols_preds(df,dates):
     tmp_df.depth = float(col.split('_')[1])
     new_df = new_df.append(tmp_df)
 
-    return new_df
+  return new_df
 
 def plot_depth_ts(prediction_df,dates,title='',test_data=False,savepath=None,plotname=''):
 
