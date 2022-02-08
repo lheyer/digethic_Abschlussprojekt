@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from torch.utils.data import DataLoader, Dataset
-
+import argparse
 
 import preprocessing as pp
 from preprocessing import Meteo_DS as gMeteo_DS
@@ -12,15 +12,20 @@ from preprocessing import SlidingWindow as gSlidingWindow
 import train_functions as tfunc
 from model import GeneralLSTM
 
+parser = argparse.ArgumentParser(description='Process some integers.')
 
+parser.add_argument('-d',  type=str,help='dataset type ("similar","year","season")')
+parser.add_argument('-pretrain',  type=bool,help='dataset type ("similar","year","season")',default=False)
+
+args = parser.parse_args()
 
 ### Hyperparameter ###
 
 epochs = 150
 
 ### data set type ###
-dataset_type = 'similar'
-
+dataset_type = args.d
+pretrain = args.pretrain
 
 for i in range(2):
   exper_n = i+1
@@ -42,13 +47,14 @@ for i in range(2):
   optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
   model.to(device)
   
-  #load pre-trianed LSTM
-  pretrain_model_path = '/model/model_pretrain_pgdl_ec01_400_til2009.model'
-  pretrain_dict = torch.load(pretrain_model_path)['state_dict']
-  model_dict = model.state_dict()
-  pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict}
-  model_dict.update(pretrain_dict)
-  model.load_state_dict(pretrain_dict)
+  if pretrain:
+    #load pre-trianed LSTM
+    pretrain_model_path = '/model/model_pretrain_pgdl_ec01_400_til2009.model'
+    pretrain_dict = torch.load(pretrain_model_path)['state_dict']
+    model_dict = model.state_dict()
+    pretrain_dict = {k: v for k, v in pretrain_dict.items() if k in model_dict}
+    model_dict.update(pretrain_dict)
+    model.load_state_dict(pretrain_dict)
   
   save_path = '/model'
   file_name = 'similar_'+dataset_type+'_exper_'+str(exper_n)+'.model'
