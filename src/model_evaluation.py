@@ -1,4 +1,6 @@
 # 
+import pandas as pd
+import numpy as np
 import preprocessing as pp
 import visualize as vis
 from eval import eval
