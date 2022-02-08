@@ -11,7 +11,7 @@ def eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path, st
 
 
   
-  test_dataset = gMeteo_DS(meteo_path,test_data_path,mendota_depth_areas,ice_csv_path=ice_flags_path,transform=True,testing=True)
+  test_dataset = gMeteo_DS(meteo_path,test_data_path,depth_areas,ice_csv_path=ice_flags_path,transform=True,testing=True)
 
   dates = test_dataset.XY.date
 
