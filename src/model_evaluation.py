@@ -7,8 +7,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 
-parser.add_argument('-d',  type=str,
-                    help='dataset type ("similar","year","season"))
+parser.add_argument('-d',  type=str,help='dataset type ("similar","year","season"))
 
 
 args = parser.parse_args()
