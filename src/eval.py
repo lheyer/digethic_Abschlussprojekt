@@ -8,7 +8,9 @@ from preprocessing import Meteo_DS as gMeteo_DS
 from model import GeneralLSTM
 
 def eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path, state_size=20, begin_loss_ind=50):
-
+  
+  device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+  torch.set_default_dtype(torch.float32)
 
   
   test_dataset = gMeteo_DS(meteo_path,test_data_path,depth_areas,ice_csv_path=ice_flags_path,transform=True,testing=True)
