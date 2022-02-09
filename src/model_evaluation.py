@@ -10,17 +10,17 @@ import argparse
 parser = argparse.ArgumentParser(description='Process some integers.')
 
 parser.add_argument('-d',  type=str,help='dataset type ("similar","year","season")')
-parser.add_argument('-no_pretrain',  type=bool,help='use model without pretraining',default=False)
+parser.add_argument('-train_type',  type=str,help='dataset type ("train","no_pretrain","pretrain"',default='train')
 
 
 args = parser.parse_args()
 
-no_pretrain = args.no_pretrain
+train_type = args.train_type
 
 depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
 
 dataset_type = args.d
-if not no_pretrain:
+if train_type=='train:
   predictions_similar = list([])
   rsme_similar = list([])
   dates_similar = list([])
@@ -28,11 +28,11 @@ if not no_pretrain:
     exper_n +=1
     print(exper_n)
 
-    meteo_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/pretrain/mendota_meteo.csv'
-    test_data_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/test_splitted/me_test_'+dataset_type+'_exper_'+str(exper_n)+'.csv'
+    meteo_path = 'data/pretrain/mendota_meteo.csv'
+    test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_'+str(exper_n)+'.csv'
     depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
-    ice_flags_path = '/content/drive/MyDrive/digethic_Project/data/example_input/raw_data/mendota_pretrainer_ice_flags.csv'
-    model_path = '/content/drive/MyDrive/digethic_Project/data/tmp/train/model/model_train_'+dataset_type+'_exper_'+str(exper_n)+'.model'
+    ice_flags_path = 'data/pretrain/mendota_pretrainer_ice_flags.csv'
+    model_path = 'model/model_train_'+dataset_type+'_exper_'+str(exper_n)+'.model'
 
     print(test_data_path)
 
@@ -44,19 +44,19 @@ if not no_pretrain:
   test_df = pd.DataFrame()
   for exper_n in range(2):
     exper_n +=1
-    test_data_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/test_splitted/me_test_'+dataset_type+'_exper_'+str(exper_n)+'.csv'
+    test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_'+str(exper_n)+'.csv'
 
     new_df = pd.read_csv(test_data_path,parse_dates=['date'])
     test_df = test_df.append(new_df)
 
-  vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname=dataset_type) 
+  vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname='ts_'+dataset_type) 
 
-else:
-  meteo_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/pretrain/mendota_meteo.csv'
-  test_data_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
+elif train_type='no_pretrain':
+  meteo_path = 'data/pretrain/mendota_meteo.csv'
+  test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
   depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
-  ice_flags_path = '/content/drive/MyDrive/digethic_Project/data/example_input/raw_data/mendota_pretrainer_ice_flags.csv'
-  model_path = '/content/drive/MyDrive/digethic_Project/data/tmp/train/model/model_train_'+dataset_type+'_exper_1_no_pt.model'
+  ice_flags_path = 'data/pretrain/mendota_pretrainer_ice_flags.csv'
+  model_path = 'model/model_train_'+dataset_type+'_exper_1_no_pt.model'
 
   print(test_data_path)
 
@@ -64,9 +64,32 @@ else:
   
   print('RSME: ',rsme)
   
-  test_data_path = '/content/drive/MyDrive/digethic_Project/data/data_ReadEtAl/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
+  test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
+
+  test_df = pd.read_csv(test_data_path,parse_dates=['date'])
+  
+  vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model (no pretraining) trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname='ts_'+dataset_type+'_no_pt_')
+  
+elif train_type='pretrain':
+  meteo_path = 'data/pretrain/mendota_meteo.csv'
+  test_data_path = 'data/predictions/me_predict_pb0.csv'
+  depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
+  ice_flags_path = 'data/pretrain/mendota_pretrainer_ice_flags.csv'
+  model_path ='model/model_pretrain_pgdl_ec01_400_til2009.model'
+  
+  print(test_data_path)
+
+  predictions, rsme, dates = eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path)
+  
+  print('RSME: ',rsme)
+  
+  test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
 
   new_df = pd.read_csv(test_data_path,parse_dates=['date'])
   
-  vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model (no pretraining) trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname=dataset_type+'_no_pt_')
+  vis.plot_depth_ts(prediction_df,dates,title='',test_data=False,savepath='pictures',plotname='dp_ts_pretrain')
+  
+  vis.plot_depth_ts(new_df,dates,title='',test_data=False,savepath='pictures',plotname='dp_ts_pretrain')
+  
+  
   
