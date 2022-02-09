@@ -43,7 +43,7 @@ state_size = 20 # number of hidden features
 # bt_sz: n_depths*N_sec
 N_sec = 19
 # value describing balance between data-driven loss and energy driven Loss
-elam = 0.005
+elam = 0.1
 # value above enery difference will be penalized
 ec_threshold = 24
 
@@ -58,6 +58,8 @@ model = GeneralLSTM(input_size, state_size,batch_size, num_layers=1)
 criterion = torch.nn.MSELoss()#
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 model.to(device)
+
+save_path = 'model/model_pretrain_pgdl_ec01_400_til2009.model'
 
 tfunc.train_ec(model, train_dl, optimizer, criterion, epochs, torch.Tensor(mendota_depth_areas.astype(np.float32)),\
               device, ec_lambda = 0.1, dc_lambda = 0.,lambda1 = 0.0, ec_threshold = 36, \
