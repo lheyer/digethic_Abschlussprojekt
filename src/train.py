@@ -26,7 +26,7 @@ torch.set_default_dtype(torch.float32)
 ### Hyperparameter ###
 
 epochs = 150
-
+state_size = 20
 ### data set type ###
 dataset_type = args.d
 pretrain = args.pretrain
