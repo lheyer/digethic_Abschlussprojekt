@@ -19,6 +19,10 @@ parser.add_argument('-pretrain',  type=bool,help='dataset type ("similar","year"
 
 args = parser.parse_args()
 
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.set_default_dtype(torch.float32)
+
 ### Hyperparameter ###
 
 epochs = 150
