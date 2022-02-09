@@ -7,9 +7,12 @@ from torch.nn.utils.clip_grad import clip_grad_norm_
 from model import GeneralLSTM
 from torch.utils.data import DataLoader, Dataset
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+torch.set_default_dtype(torch.float32)
+
 
 # Save model somewhere?
-save_path = None
+save_path = 'model/model_pretrain_pgdl_ec01_400_til2009.model'
 
 ##################
 ### Data paths ###
@@ -60,7 +63,7 @@ criterion = torch.nn.MSELoss()#
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 model.to(device)
 
-save_path = 'model/model_pretrain_pgdl_ec01_400_til2009.model'
+
 
 tfunc.train_ec(model, train_dl, optimizer, criterion, epochs, torch.Tensor(mendota_depth_areas.astype(np.float32)),\
               device, ec_lambda = 0.1, dc_lambda = 0.,lambda1 = 0.0, ec_threshold = 36, \
