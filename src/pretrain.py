@@ -1,4 +1,5 @@
 # Pretraining with Labels simulated with GLM model
+import numpy as np
 import phys_functions as pf
 import train_functions as tfunc
 import preprocessing as pp
