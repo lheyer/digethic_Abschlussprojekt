@@ -1,6 +1,6 @@
 # Pretraining with Labels simulated with GLM model
 import phys_functions as pf
-import train_funtions as tfunc
+import train_functions as tfunc
 import preprossesing as pp
 import torch
 from torch.nn.utils.clip_grad import clip_grad_norm_
