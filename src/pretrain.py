@@ -58,7 +58,7 @@ ec_threshold = 24
 
 input_size = train_dl.dataset.x.size()[-1]
 batch_size = train_dl.dataset.x.size()[0]
-model = GeneralLSTM(input_size, state_size,batch_size, num_layers=1)
+model = GeneralLSTM(input_size, state_size,batch_size,device, num_layers=1)
 criterion = torch.nn.MSELoss()#
 optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
 model.to(device)
