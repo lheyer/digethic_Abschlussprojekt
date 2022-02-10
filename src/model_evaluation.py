@@ -20,7 +20,7 @@ train_type = args.train_type
 depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
 
 dataset_type = args.d
-if train_type=='train:
+if train_type=='train':
   predictions_similar = list([])
   rsme_similar = list([])
   dates_similar = list([])
