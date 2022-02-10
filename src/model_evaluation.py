@@ -51,7 +51,7 @@ if train_type=='train':
 
   vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname='ts_'+dataset_type) 
 
-elif train_type='no_pretrain':
+elif train_type=='no_pretrain':
   meteo_path = 'data/pretrain/mendota_meteo.csv'
   test_data_path = 'data/test_splitted/me_test_'+dataset_type+'_exper_1.csv'
   depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
@@ -70,7 +70,7 @@ elif train_type='no_pretrain':
   
   vis.plot_ts(predictions_similar, dates_similar, test_df=test_df,title='Predictions of model (no pretraining) trained with '+dataset_type+' dataset on test dataset vs labels',labels=None,savepath='pictures',plotname='ts_'+dataset_type+'_no_pt_')
   
-elif train_type='pretrain':
+elif train_type=='pretrain':
   meteo_path = 'data/pretrain/mendota_meteo.csv'
   test_data_path = 'data/predictions/me_predict_pb0.csv'
   depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
