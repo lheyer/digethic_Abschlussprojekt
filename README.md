@@ -51,6 +51,13 @@ Then run in the repository folder:
 
 `python src/pretrain.py`
 
+**Training**
+
+`python scr/train.py -d 'similar' -pretrain True`
+
+- -d flag for choosing train dataset from ['similar','season','year']
+- -pretrain flag for choosing to use pretrained model [True,False](False is default)
+
 
 
 
