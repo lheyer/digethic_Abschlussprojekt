@@ -63,7 +63,7 @@ for i in range(2):
     model.load_state_dict(pretrain_dict)
   
   save_path = 'model'
-  file_name = 'similar_'+dataset_type+'_exper_'+str(exper_n)+'.model'
+  file_name = 'model_train_'+dataset_type+'_exper_'+str(exper_n)+'.model'
   if not pretrain:
     file_name = file_name.split('.')[0]+'_no_pt'+file_name.split('.')[1]
     
