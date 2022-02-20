@@ -72,11 +72,12 @@ def plot_depth_ts(prediction_df, dates, title='', test_data=False, savepath=None
 
     ax = sns.scatterplot(data=new_df.set_index('date'), x="date", y="depth",
                          hue="temp", palette='viridis', s=60, marker='s', linewidth=0)
+    ax.set_ylabel('depth [m]')
     ax.yaxis.label.set_size(20)
     ax.tick_params(axis='y', labelsize=16)
     ax.xaxis.label.set_size(20)
     ax.tick_params(axis='x', labelsize=16)
-    plt.legend(loc='best', prop={'size': 16},
+    plt.legend(loc='best', title='Temperature [°C]', prop={'size': 16},
                bbox_to_anchor=(0.55, 0.5, 0.5, 0.5))
 
     if savepath is not None:
@@ -105,16 +106,28 @@ def plot_ts(prediction_df_list, pred_date_list, test_df=None, title=None, labels
     ind = 0
     for df, dates in zip(prediction_df_list, pred_date_list):
 
-        new_df = stack_depth_cols_preds(df[0], dates[0])
+        # stack_depth_cols_preds(df[0], dates[0])
+        print(dates)
+        new_df = stack_depth_cols_preds(df, dates)
+
+        print(new_df)
 
         ax = new_df.groupby('date').mean().temp.plot(
             label=labels[ind], marker='.', ls='')
         ind += 1
 
     if test_df is not None:
-        #new_df = stack_depth_cols_test_labels(test_df)
-        test_df.groupby('date').mean().temp.plot(
-            label='labels', marker='.', ls='')
+
+        if 'depth' not in test_df.columns:
+            print('dates: \n', test_df.date.values)
+            test_df = stack_depth_cols_preds(test_df, test_df.date.values)
+            print(test_df)
+            test_df.groupby('date').mean().temp.plot(
+                label='labels', marker='.', ls='')
+
+        else:
+            test_df.groupby('date').mean().temp.plot(
+                label='labels', marker='.', ls='')
 
     ax.yaxis.label.set_size(20)
     ax.tick_params(axis='y', labelsize=16)
