@@ -73,7 +73,7 @@ class Meteo_DS(Dataset):
             lambda x: self.lake_depths)
         # print(self.XY.iloc[0].depths)
 
-        self.phys_list = ['tm_yday', 'ShortWave', 'LongWave',
+        self.phys_list = ['tm_yday', 'depths', 'ShortWave', 'LongWave',
                           'AirTemp', 'RelHum', 'WindSpeed', 'Rain', 'Snow']
 
         if ice_csv_path is not None:
@@ -93,7 +93,7 @@ class Meteo_DS(Dataset):
         # print('exploded depths')
         # print('self.X 1. row: ',self.X.iloc[0])
         # print('now convert to numpy')
-        self.X = self.X.to_numpy().reshape(self.n_depths, -1, 9)
+        self.X = self.X.to_numpy().reshape(self.n_depths, -1, 10)
 
         # print('self.X 1. row: ',self.X[0][0])
         # date vector
@@ -110,8 +110,8 @@ class Meteo_DS(Dataset):
 
     def scale(self, X):
         scaler = MinMaxScaler()
-        X = scaler.fit_transform(X.reshape(-1, 8))
-        X = X.reshape(self.n_depths, -1, 8)
+        X = scaler.fit_transform(X.reshape(-1, 9))
+        X = X.reshape(self.n_depths, -1, 9)
         return X
 
     def get_labels(self, Y):
