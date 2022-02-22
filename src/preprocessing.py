@@ -5,12 +5,12 @@ import datetime as dt
 import pandas as pd
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from sklearn.preprocessing import MinMaxScaler
 
-#########################
-### Constants & Dicts ###
-#########################
+#####################
+# Constants & Dicts #
+#####################
 
 lake_id_dict = {'Lake Mendota': 'nhd_13293262',
                 'Sparkling Lake': 'nhd_13344210'}
@@ -20,28 +20,31 @@ lake_area_dict = {'Lake Mendota': 39416000,
                   'Sparkling Lake': 635356}
 lake_depth_areas_dict = dict()
 lake_depth_areas_dict['Lake Mendota'] = np.array([
-    39865825, 38308175, 38308175, 35178625, 35178625, 33403850, 31530150, 31530150, 30154150, 30154150, 29022000,
-    29022000, 28063625, 28063625, 27501875, 26744500, 26744500, 26084050, 26084050, 25310550, 24685650, 24685650,
-    23789125, 23789125, 22829450, 22829450, 21563875, 21563875, 20081675, 18989925, 18989925, 17240525, 17240525,
-    15659325, 14100275, 14100275, 12271400, 12271400, 9962525, 9962525, 7777250, 7777250, 5956775, 4039800, 4039800,
-    2560125, 2560125, 820925, 820925, 216125])
+    39865825, 38308175, 38308175, 35178625, 35178625, 33403850, 31530150, 31530150, 30154150,
+    30154150, 29022000, 29022000, 28063625, 28063625, 27501875, 26744500, 26744500, 26084050,
+    26084050, 25310550, 24685650, 24685650, 23789125, 23789125, 22829450, 22829450, 21563875,
+    21563875, 20081675, 18989925, 18989925, 17240525, 17240525, 15659325, 14100275, 14100275,
+    12271400, 12271400, 9962525, 9962525, 7777250, 7777250, 5956775, 4039800, 4039800, 2560125,
+    2560125, 820925, 820925, 216125])
 
 
-#########################
-### Dataset classes ###
-#########################
+###################
+# Dataset classes #
+###################
 
 class Meteo_DS(Dataset):
     """Meteorological Dataset
       for serving the meteorological
     """
 
-    def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list, time_slice=None, ice_csv_path=None, transform=None, testing=False):
+    def __init__(self, meteo_csv_path: str, pred_csv_path: str, depth_areas: list,
+                 time_slice=None, ice_csv_path=None, transform=None, testing=False):
         """
         Args:
             meteo_csv_path (string): Path to the csv file with meteorological data
             pred_csv_path (string): Path to the csv file with temperature predictions
-            time_slice (list): [min_date, max_date] min and max date as string (%Y%m%d) to choose time interval for data
+            time_slice (list): [min_date, max_date] min and max date as string (%Y%m%d)
+                                to choose time interval for data
             ice_csv_path (string, optional): Path to the csv file with ice flags
             depth_areas (list): List with depth areas (float) for selected lake
             transform (callable, optional): Optional transform to be applied
@@ -84,15 +87,15 @@ class Meteo_DS(Dataset):
                               & (self.XY.date < time_slice[1])]
 
         # print(self.XY.iloc[0])
-        #print('now explode depths')
+        # print('now explode depths')
         self.X = self.XY.explode('depths').sort_values(
             ['depths', 'date'])[self.phys_list]
-        #print('exploded depths')
-        #print('self.X 1. row: ',self.X.iloc[0])
-        #print('now convert to numpy')
+        # print('exploded depths')
+        # print('self.X 1. row: ',self.X.iloc[0])
+        # print('now convert to numpy')
         self.X = self.X.to_numpy().reshape(self.n_depths, -1, 9)
 
-        #print('self.X 1. row: ',self.X[0][0])
+        # print('self.X 1. row: ',self.X[0][0])
         # date vector
         helper = np.vectorize(lambda x: dt.date.toordinal(
             pd.Timestamp(x).to_pydatetime()))
@@ -120,7 +123,7 @@ class Meteo_DS(Dataset):
             # print('index_arr: ',index_arr)
             # print('index_arr shape: ',index_arr.shape)
             # print('get labels from buoy data')
-            Y_labels = Y[['date', 'depth', 'temp']]
+            Y_labels = Y[['date', 'depth', 'temp']].copy()
             Y_labels.date = Y_labels.index
             Y_labels.depth = Y_labels.depth.apply(lambda x: round(x * 2) / 2)
             # print('Y_labels shape after rounding depths: ',Y_labels.shape)
@@ -151,7 +154,7 @@ class Meteo_DS(Dataset):
 
         else:
             print('get labels from sim data')
-            Y_labels = Y.drop('date', axis=1).T  # .values
+            Y_labels = Y.drop('date', axis=1).T.copy()  # .values
             # .apply(lambda x: float(x.split('_')[-1]))
             Y_labels.loc[:, 'depth'] = Y_labels.index
             Y_labels.depth = Y_labels.depth.apply(
@@ -190,17 +193,19 @@ class Meteo_DS(Dataset):
 class SlidingWindow(Dataset):
     """Sliding Window Class for data sorted by (Variable,time)"""
 
-    def __init__(self, features: np.array, window: int, step: int, labels: np.array, phys_data=None, dates=None, label_window=1):
+    def __init__(self, features: np.array, window: int, step: int, labels: np.array, phys_data=None,
+                 dates=None, label_window=1):
         """
         Args:
             features (numpy.array): (n_depths, time_steps,features) array including features
             window (int): data window for feature data
             step (int): stride width
             labels (numpy.array): (n_depths, time_steps) array including labels
-            phys_data (numpy.array): (n_depths, time_steps, features+mask) array including non-normalized meteorological data & ice mask
+            phys_data (numpy.array): (n_depths, time_steps, features+mask) array
+                                        including non-normalized meteorological data & ice mask
         """
 
-        #assert len(x)==len(y)
+        # assert len(x)==len(y)
         self.x = torch.Tensor(features.astype(np.float32))
 
         self.y = torch.Tensor(labels.astype(np.float32))  # )
@@ -215,7 +220,7 @@ class SlidingWindow(Dataset):
         self.window = int(window)
         self.step = step
         self.label_window = label_window
-        #self.xlen = int(self.x.shape[1])
+        # self.xlen = int(self.x.shape[1])
         self.xlen = self.x.size(1)
         self.start_index = 0
 
@@ -226,11 +231,12 @@ class SlidingWindow(Dataset):
         y_end = x_end+self.label_window
 
         if isinstance(self.phys_data, torch.Tensor):
-            #print(' found phys data')
+            # print(' found phys data')
             # [:,y_start:y_end]
-            return self.x[:, x_start:x_end, :], self.phys_data[:, x_start:x_end, :], self.dates[x_start:x_end], self.y[:, x_start:x_end]
+            return self.x[:, x_start:x_end, :], self.phys_data[:, x_start:x_end, :], \
+                self.dates[x_start:x_end], self.y[:, x_start:x_end]
         else:
-            #print('did not find phys data')
+            # print('did not find phys data')
             return self.x[:, x_start:x_end, :], self.y[:, y_start:y_end]
 
     def __len__(self):
