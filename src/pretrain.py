@@ -1,12 +1,10 @@
 # Pretraining with Labels simulated with GLM model
 import numpy as np
-import phys_functions as pf
 import train_functions as tfunc
 import preprocessing as pp
 import torch
-from torch.nn.utils.clip_grad import clip_grad_norm_
 from model import GeneralLSTM
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -31,18 +29,18 @@ if model_type == 'pgdl':
 else:
     save_path = 'model/model_pretrain_pgdl_ec00_400_til2009.model'
 
-##################
-### Data paths ###
-##################
+##############
+# Data paths #
+##############
 
 # change paths to something interactive (--> if __name__ == '__main__' block needed)
 mendota_meteo_path = 'data/pretrain/mendota_meteo.csv'
 predict_pb0_path = 'data/predictions/me_predict_pb0.csv'
 ice_flags_path = 'data/pretrain/mendota_pretrainer_ice_flags.csv'
 
-###################
-### Import data ###
-###################
+###############
+# Import data #
+###############
 
 # window size with sliding window gap of 176 (half window size)
 window = 353
@@ -50,14 +48,16 @@ stride = int(window/2)
 
 mendota_depth_areas = pp.lake_depth_areas_dict['Lake Mendota']
 train_dataset = pp.Meteo_DS(mendota_meteo_path, predict_pb0_path,
-                            mendota_depth_areas, time_slice=['1980-01-01', '2008-12-31'], ice_csv_path=ice_flags_path, transform=True)
+                            mendota_depth_areas,
+                            time_slice=['1980-01-01', '2008-12-31'],
+                            ice_csv_path=ice_flags_path, transform=True)
 
 train_dl = DataLoader(pp.SlidingWindow(train_dataset.Xt, window, stride, train_dataset.labels,
                       phys_data=train_dataset.X, dates=train_dataset.dates), shuffle=False)
 
-########################################
-### Declare constant hyperparameters ###
-########################################
+####################################
+# Declare constant hyperparameters #
+####################################
 
 learning_rate = 0.005
 epochs = 400
@@ -74,9 +74,9 @@ else:
 ec_threshold = 36  # 24
 
 
-###############################
-### Init model & optimizer  ###
-###############################
+###########################
+# Init model & optimizer  #
+###########################
 
 input_size = train_dl.dataset.x.size()[-1]
 batch_size = train_dl.dataset.x.size()[0]
@@ -86,6 +86,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 model.to(device)
 
 
-tfunc.train_ec(model, train_dl, optimizer, criterion, epochs, torch.Tensor(mendota_depth_areas.astype(np.float32)),
+tfunc.train_ec(model, train_dl, optimizer, criterion, epochs,
+               torch.Tensor(mendota_depth_areas.astype(np.float32)),
                device, ec_lambda=ec_lambda, dc_lambda=0., lambda1=0.0, ec_threshold=ec_threshold,
                begin_loss_ind=50, grad_clip=1.0, save_path=save_path, verbose=False)

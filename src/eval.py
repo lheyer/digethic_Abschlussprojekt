@@ -2,20 +2,22 @@
 import torch
 import numpy as np
 import pandas as pd
-import os
-import preprocessing as pp
+# import os
+# import preprocessing as pp
 from preprocessing import Meteo_DS as gMeteo_DS
 from model import GeneralLSTM
 
 
-def eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path, time_slice=None, state_size=20, begin_loss_ind=50):
+def eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path, time_slice=None,
+         state_size=20, begin_loss_ind=50):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     torch.set_default_dtype(torch.float32)
 
     if time_slice is not None:
         test_dataset = gMeteo_DS(meteo_path, test_data_path, depth_areas,
-                                 ice_csv_path=ice_flags_path, time_slice=time_slice, transform=True, testing=True)
+                                 ice_csv_path=ice_flags_path, time_slice=time_slice, transform=True,
+                                 testing=True)
     else:
         test_dataset = gMeteo_DS(meteo_path, test_data_path, depth_areas,
                                  ice_csv_path=ice_flags_path, transform=True, testing=True)
@@ -28,7 +30,7 @@ def eval(model_path, meteo_path, test_data_path, depth_areas, ice_flags_path, ti
     model = GeneralLSTM(input_size, state_size,
                         batch_size, device, num_layers=1)
     criterion = torch.nn.MSELoss()
-    #optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
+    # optimizer = torch.optim.Adam(model.parameters(),lr=learning_rate)
     model.to(device)
 
     # load trained model

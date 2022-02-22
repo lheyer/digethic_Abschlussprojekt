@@ -2,9 +2,8 @@
 import os
 import torch
 import numpy as np
-import pandas as pd
-from tqdm import tqdm
-from torch.utils.data import DataLoader, Dataset
+# import pandas as pd
+from torch.utils.data import DataLoader
 import argparse
 
 import preprocessing as pp
@@ -26,12 +25,14 @@ args = parser.parse_args()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 torch.set_default_dtype(torch.float32)
 
-### Hyperparameter ###
-
+###################
+# Hyperparameters #
+###################
 epochs = 150
 state_size = 20
 learning_rate = 0.005
-### data set type ###
+
+# data set type #
 dataset_type = args.d
 pretrain = args.pretrain
 
@@ -45,8 +46,9 @@ for i in range(2):
     train_dataset = gMeteo_DS(meteo_path, predict_pb0_path,
                               mendota_depth_areas, ice_csv_path=ice_flags_path, transform=True)
 
-    train_dl = DataLoader(gSlidingWindow(train_dataset.Xt, 353, int(
-        353/2), train_dataset.labels, phys_data=train_dataset.X, dates=train_dataset.dates), shuffle=False)
+    train_dl = DataLoader(gSlidingWindow(train_dataset.Xt, 353, int(353/2), train_dataset.labels,
+                                         phys_data=train_dataset.X, dates=train_dataset.dates),
+                          shuffle=False)
 
     # init model
 
@@ -77,5 +79,7 @@ for i in range(2):
     log_path = os.path.join(save_path, log_file_name)
     save_path = os.path.join(save_path, file_name)
 
-    tfunc.train_ec(model, train_dl, optimizer, criterion, epochs, torch.Tensor(mendota_depth_areas.astype(np.float32)),
-                   device, ec_lambda=0.1, dc_lambda=0.0, lambda1=0.0, ec_threshold=36, begin_loss_ind=50, grad_clip=1.0, save_path=save_path, verbose=True)
+    tfunc.train_ec(model, train_dl, optimizer, criterion, epochs,
+                   torch.Tensor(mendota_depth_areas.astype(np.float32)),
+                   device, ec_lambda=0.1, dc_lambda=0.0, lambda1=0.0, ec_threshold=36,
+                   begin_loss_ind=50, grad_clip=1.0, save_path=save_path, verbose=True)
