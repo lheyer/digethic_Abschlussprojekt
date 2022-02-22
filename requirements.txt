@@ -7,8 +7,8 @@ session_info
 sklearn
 torch
 torchvision
-tqdm==4.62.3
-IPython==5.5.0
+tqdm
+ipython>=5.11
 jupyter_client
 jupyter_core
 notebook
