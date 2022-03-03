@@ -1,11 +1,11 @@
-# Digethic-Abschlussprojekt: Incorporating Prior Scientific Knowledge IntoDeep Learning
+# Digethic-Abschlussprojekt: Incorporating Prior Scientific Knowledge Into Deep Learning
 
 >This repository is based on the papers "Physics Guided RNNs for Modeling Dynamical Systems: A Case Study in Simulating Lake Temperature Profiles" (Jia, Xiaowei, et al., 2019, https://epubs.siam.org/doi/abs/10.1137/1.9781611975673.63 ) and "Process-Guided Deep Learning Predictions of Lake Water Temperature" (Read et al., 2019, https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2019WR024922 ) and its data and code (https://doi.org/10.5066/P9AQPIVD, https://zenodo.org/record/3497495#.YgGLqe8xnJE).
 
 
 
 
-Prediction of Lake Temperatures with physics-guided Deep Learing (PGDL)
+Prediction of Lake Temperatures with physics-guided Deep Learning (PGDL)
 
 
 ## Visual Studio Code
