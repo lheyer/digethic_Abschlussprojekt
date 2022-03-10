@@ -29,7 +29,7 @@ def stack_depth_cols_preds(df, dates):
     for col in df.columns:
         if col != 'date':
 
-            d = col.split('_')[1]
+            # d = col.split('_')[1]
             # print(d)
             # print(train_dataset.XY[train_dataset.XY.depth==d].index.shape)
 
@@ -89,12 +89,14 @@ def plot_depth_ts(prediction_df, dates, title='', test_data=False, savepath=None
     return
 
 
-def plot_ts(prediction_df_list, pred_date_list, test_df=None, title=None, labels=None, savepath=None, plotname=''):
+def plot_ts(prediction_df_list, pred_date_list, test_df=None, title=None, labels=None,
+            savepath=None, plotname=''):
 
     plt.figure(figsize=(30, 5))
     if title is None:
         plt.title(
-            'Predictions of pretrained model on training data and labels, all averaged over depth', fontsize=20)
+            'Predictions of pretrained model on training data and labels, all averaged over depth',
+            fontsize=20)
     else:
         plt.title(title, fontsize=20)
 
